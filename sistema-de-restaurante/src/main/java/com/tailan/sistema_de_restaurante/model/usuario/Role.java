@@ -8,7 +8,7 @@ import java.util.UUID;
 @Table(name="roles")
 public class Role {
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
     @Enumerated(EnumType.STRING)
@@ -17,6 +17,10 @@ public class Role {
     public Role(RoleName role, UUID id) {
         this.role = role;
         this.id = id;
+    }
+
+    public Role(RoleName role) {
+        this.role = role;
     }
 
     public Role() {
