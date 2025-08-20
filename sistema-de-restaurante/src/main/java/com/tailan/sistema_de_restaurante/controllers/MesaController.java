@@ -43,7 +43,7 @@ public class MesaController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PutMapping("/{mesaId}")
+    @DeleteMapping("/{mesaId}")
     public ResponseEntity<ApiResponseDto> deletarMesa(@PathVariable("mesaId")UUID mesaId){
         mesaService.deleteMesa(mesaId);
         ApiResponseDto response = new ApiResponseDto(mesaId, "Mesa deletada com sucesso.");
