@@ -10,8 +10,10 @@ public class Mesa {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
+    @Column(unique = true)
     private String name;
     private Integer capacity;
+    @Enumerated(EnumType.STRING)
     private StatusMesa status;
 
     public Mesa() {
