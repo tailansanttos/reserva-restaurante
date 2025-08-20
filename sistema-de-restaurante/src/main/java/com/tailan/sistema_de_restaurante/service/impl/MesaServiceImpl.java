@@ -61,38 +61,50 @@ public class MesaServiceImpl implements MesaService {
         mesaRepository.delete(mesa.get());
     }
 
+    @Override
     @Transactional
     public void atualizarStatusMesaReservada(UUID mesaId){
         Mesa mesa = getMesa(mesaId);
-        Boolean mesaDisponivel = validarMesaDisponivel(mesa.getId());
-        if (mesaDisponivel) {
-            mesa.setStatus(StatusMesa.RESERVADA);
+        mesa.setStatus(StatusMesa.RESERVADA);
+        mesaRepository.save(mesa);
+
+    }
+
+    @Transactional
+    @Override
+    public void atualizarStatusMesaDisponivel(UUID mesaId){
+        Mesa mesa = getMesa(mesaId);
+        StatusMesa statusAntigo = mesa.getStatus();
+        if (statusAntigo.equals(StatusMesa.RESERVADA)) {
+            mesa.setStatus(StatusMesa.DISPONIVEL);
             mesaRepository.save(mesa);
-        }else throw new IllegalArgumentException("Mesa não disponivel para reserva.");
+        }else throw new IllegalArgumentException("Mesa não está reservada para ser atualizada.");
 
     }
 
-    //CASO A MESA ESTEJA INATIVA, O USUARIO NAO CONSEGUE RESERVAR
-
-    @Transactional
-    public Boolean validarMesaDisponivel(UUID mesaId){
-        Mesa mesa = getMesa(mesaId);
-        if (mesa.getStatus().equals(StatusMesa.DISPONIVEL)){
-            return true;
-        }
-        return false;
+    @Override
+    public MesaResponseDto entityToDto(Mesa mesa) {
+        return mesaMapper.toMesaResponseDto(mesa);
     }
 
-    @Transactional
-    public Boolean validarCapacidadeMesa(UUID mesaId, Integer quantidadePessoas){
+
+    @Override
+    public Boolean validarMesaReserva(UUID mesaId, Integer quantidadePessoas){
         Mesa mesa = getMesa(mesaId);
-        if( quantidadePessoas > mesa.getCapacity()){
-            return false;
+
+        if (!mesa.getStatus().equals(StatusMesa.DISPONIVEL)){
+            throw new IllegalArgumentException("Mesa não está disponivel para reserva.");
         }
+
+        if (quantidadePessoas > mesa.getCapacity()){
+            throw new IllegalArgumentException("Capacidade da mesa insuficiente para a quantidade de pessoas.");
+        }
+
         return true;
     }
 
-    private Mesa getMesa(UUID mesaId){
+    @Override
+    public Mesa getMesa(UUID mesaId){
         Mesa mesa = mesaRepository.findById(mesaId).orElseThrow(() -> new IllegalArgumentException("Mesa não encontrada."));
         return mesa;
     }
