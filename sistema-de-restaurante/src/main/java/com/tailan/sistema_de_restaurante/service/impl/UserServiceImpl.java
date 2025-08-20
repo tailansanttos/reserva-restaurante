@@ -3,8 +3,10 @@ package com.tailan.sistema_de_restaurante.service.impl;
 import com.tailan.sistema_de_restaurante.dto.token.TokenResponseDto;
 import com.tailan.sistema_de_restaurante.dto.user.UserLoginDto;
 import com.tailan.sistema_de_restaurante.dto.user.UserRegisterDto;
+import com.tailan.sistema_de_restaurante.dto.user.UserResponseDto;
 import com.tailan.sistema_de_restaurante.infra.security.SecurityConfiguration;
 import com.tailan.sistema_de_restaurante.infra.security.UserDetailsImpl;
+import com.tailan.sistema_de_restaurante.mapper.UserMapper;
 import com.tailan.sistema_de_restaurante.model.usuario.Role;
 import com.tailan.sistema_de_restaurante.model.usuario.User;
 import com.tailan.sistema_de_restaurante.repositories.UserRepository;
@@ -25,13 +27,15 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationManager authenticationManager;
     private final SecurityConfiguration securityConfiguration;
     private final RoleService  roleService;
+    private final UserMapper userMapper;
 
-    public UserServiceImpl(UserRepository userRepository, JwtTokenService tokenService, AuthenticationManager authenticationManager, SecurityConfiguration securityConfiguration, RoleService roleService) {
+    public UserServiceImpl(UserRepository userRepository, JwtTokenService tokenService, AuthenticationManager authenticationManager, SecurityConfiguration securityConfiguration, RoleService roleService, UserMapper userMapper) {
         this.userRepository = userRepository;
         this.tokenService = tokenService;
         this.authenticationManager = authenticationManager;
         this.securityConfiguration = securityConfiguration;
         this.roleService = roleService;
+        this.userMapper = userMapper;
     }
 
     @Override
@@ -63,5 +67,16 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
 
 
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("Usuario não cadastrado"));
+        return user;
+    }
+
+    @Override
+    public UserResponseDto entityToDto(User user) {
+        return userMapper.entityToDto(user);
     }
 }
