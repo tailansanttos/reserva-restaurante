@@ -2,6 +2,9 @@ package com.tailan.sistema_de_restaurante.service.impl;
 
 import com.tailan.sistema_de_restaurante.dto.mesa.MesaRequestDto;
 import com.tailan.sistema_de_restaurante.dto.mesa.MesaResponseDto;
+import com.tailan.sistema_de_restaurante.exceptions.CapacidadeMesaException;
+import com.tailan.sistema_de_restaurante.exceptions.MesaIndisponivelException;
+import com.tailan.sistema_de_restaurante.exceptions.MesaNotFoundException;
 import com.tailan.sistema_de_restaurante.mapper.MesaMapper;
 import com.tailan.sistema_de_restaurante.model.mesa.Mesa;
 import com.tailan.sistema_de_restaurante.model.mesa.StatusMesa;
@@ -45,7 +48,7 @@ public class MesaServiceImpl implements MesaService {
         //ADMIN ATUALIZA O STATUS DA MESA PARA INATIVA CASO ELA QUEBRE.
         Optional<Mesa> mesa = mesaRepository.findById(mesaId);
         if (!(mesa.isPresent())) {
-            throw new IllegalArgumentException("Mesa não encontrada no sistema.");
+            throw new MesaNotFoundException("Mesa não encontrada no sistema.");
         }
         mesa.get().setStatus(StatusMesa.INATIVA);
         mesaRepository.save(mesa.get());
@@ -56,7 +59,7 @@ public class MesaServiceImpl implements MesaService {
     public void deleteMesa(UUID mesaId) {
         Optional<Mesa> mesa = mesaRepository.findById(mesaId);
         if (!mesa.isPresent()) {
-            throw new IllegalArgumentException("Mesa não encontrada no sistema.");
+            throw new MesaNotFoundException("Mesa não encontrada no sistema.");
         }
         mesaRepository.delete(mesa.get());
     }
@@ -75,10 +78,12 @@ public class MesaServiceImpl implements MesaService {
     public void atualizarStatusMesaDisponivel(UUID mesaId){
         Mesa mesa = getMesa(mesaId);
         StatusMesa statusAntigo = mesa.getStatus();
+
         if (statusAntigo.equals(StatusMesa.RESERVADA)) {
             mesa.setStatus(StatusMesa.DISPONIVEL);
             mesaRepository.save(mesa);
-        }else throw new IllegalArgumentException("Mesa não está reservada para ser atualizada.");
+
+        }else throw new MesaNotFoundException("Mesa não está reservada para ser atualizada.");
 
     }
 
@@ -93,11 +98,11 @@ public class MesaServiceImpl implements MesaService {
         Mesa mesa = getMesa(mesaId);
 
         if (!mesa.getStatus().equals(StatusMesa.DISPONIVEL)){
-            throw new IllegalArgumentException("Mesa não está disponivel para reserva.");
+            throw new MesaIndisponivelException("Mesa não está disponivel para reserva.");
         }
 
         if (quantidadePessoas > mesa.getCapacity()){
-            throw new IllegalArgumentException("Capacidade da mesa insuficiente para a quantidade de pessoas.");
+            throw new CapacidadeMesaException("Capacidade da mesa insuficiente para a quantidade de pessoas.");
         }
 
         return true;
@@ -105,7 +110,8 @@ public class MesaServiceImpl implements MesaService {
 
     @Override
     public Mesa getMesa(UUID mesaId){
-        Mesa mesa = mesaRepository.findById(mesaId).orElseThrow(() -> new IllegalArgumentException("Mesa não encontrada."));
+        Mesa mesa = mesaRepository.findById(mesaId).orElseThrow(() ->
+                new MesaNotFoundException("Mesa não encontrada."));
         return mesa;
     }
 

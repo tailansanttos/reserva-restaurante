@@ -4,6 +4,7 @@ import com.tailan.sistema_de_restaurante.dto.token.TokenResponseDto;
 import com.tailan.sistema_de_restaurante.dto.user.UserLoginDto;
 import com.tailan.sistema_de_restaurante.dto.user.UserRegisterDto;
 import com.tailan.sistema_de_restaurante.dto.user.UserResponseDto;
+import com.tailan.sistema_de_restaurante.exceptions.UserNotFoundException;
 import com.tailan.sistema_de_restaurante.infra.security.SecurityConfiguration;
 import com.tailan.sistema_de_restaurante.infra.security.UserDetailsImpl;
 import com.tailan.sistema_de_restaurante.mapper.UserMapper;
@@ -71,7 +72,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findByEmail(String email) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("Usuario não cadastrado"));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("Usuario não cadastrado"));
         return user;
     }
 
