@@ -18,12 +18,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceImplTest {
@@ -39,20 +39,30 @@ class ReservationServiceImplTest {
     @InjectMocks
     private ReservationServiceImpl reservationServiceImpl;
 
+    private UUID reservaId;
     private UUID mesaId;
     private User usuario;
     private Mesa mesa;
+    private Reservation reserva;
     private ReservaRequestDto reservaRequestDto;
 
     @BeforeEach
     public void setUp(){
+        reservaId = UUID.randomUUID();
         mesaId = UUID.randomUUID();
+
         usuario = new User();
         usuario.setId(UUID.randomUUID());
         usuario.setEmail("teste@email.com");
 
         mesa = new Mesa();
         mesa.setId(mesaId);
+
+        reserva = new Reservation();
+        reserva.setId(reservaId);
+        reserva.setMesa(mesa);
+        reserva.setUser(usuario);
+        reserva.setStatus(StatusReserva.ATIVO);
 
         reservaRequestDto = new ReservaRequestDto(LocalDateTime.now().plusHours(4), 5);
     }
@@ -80,6 +90,20 @@ class ReservationServiceImplTest {
         verify(reservationRepository).save(any(Reservation.class));
 
         verify(mesaService).atualizarStatusMesaReservada(mesaId);
+    }
+
+    @Test
+    void deveCancelarReservaMesaComSucesso() {
+        when(authUtil.getUsuarioLogado()).thenReturn(usuario);
+        when(reservationRepository.findByUserAndId(usuario,reservaId)).thenReturn(Optional.of(reserva));
+
+        reservationServiceImpl.cancelReserva(reservaId);
+
+        assertEquals(StatusReserva.CANCELADO, reserva.getStatus());
+
+        verify(mesaService).atualizarStatusMesaDisponivel(reserva.getId());
+
+        verify(reservationRepository).save(reserva);
 
     }
 }
