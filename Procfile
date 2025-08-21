@@ -1,0 +1,1 @@
+web: java -jar target/sistema-de-restaurante-0.0.1-SNAPSHOT.jar
