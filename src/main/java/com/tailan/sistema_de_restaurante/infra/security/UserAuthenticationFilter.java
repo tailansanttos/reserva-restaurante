@@ -1,5 +1,6 @@
 package com.tailan.sistema_de_restaurante.infra.security;
 
+import com.tailan.sistema_de_restaurante.infra.security.UserDetailsImpl;
 import com.tailan.sistema_de_restaurante.model.usuario.User;
 import com.tailan.sistema_de_restaurante.repositories.UserRepository;
 import com.tailan.sistema_de_restaurante.service.auth.JwtTokenService;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 @Component
 public class UserAuthenticationFilter extends OncePerRequestFilter {
@@ -32,15 +32,9 @@ public class UserAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        // Se o endpoint for público, apenas passa adiante
-        if (isPublicEndpoint(request)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
         String token = extractToken(request);
         if (token != null) {
-            String subject = jwtTokenService.getSubjectFromToken(token); // nome do usuário do token
+            String subject = jwtTokenService.getSubjectFromToken(token);
             User user = userRepository.findByEmail(subject).orElse(null);
 
             if (user != null) {
@@ -53,11 +47,6 @@ public class UserAuthenticationFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
-    }
-
-    private boolean isPublicEndpoint(HttpServletRequest request) {
-        String path = request.getRequestURI();
-        return Arrays.asList(SecurityConfiguration.PUBLIC_ENDPOINTS).contains(path);
     }
 
     private String extractToken(HttpServletRequest request) {
