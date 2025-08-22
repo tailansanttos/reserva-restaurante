@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -30,6 +31,7 @@ public class MesaController {
         this.mesaService = mesaService;
     }
 
+    @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Registrar nova mesa", description = "Registrar uma nova mesa no sistema")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Mesa criada com sucesso."
@@ -42,6 +44,7 @@ public class MesaController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Listar mesas disponíveis", description = "Retorna uma lista de todas as mesas disponíveis para reserva.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de mesas retornada com sucesso.",
@@ -55,6 +58,7 @@ public class MesaController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Atualizar status da mesa", description = "Atualiza o status de uma mesa (ex: para 'INATIVA' se estiver quebrada). Apenas para ADMINS.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Status da mesa atualizado com sucesso.",
@@ -69,6 +73,8 @@ public class MesaController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+
+    @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Deletar mesa", description = "Deleta uma mesa do sistema. Apenas para ADMINS.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Mesa deletada com sucesso.",

@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,7 @@ public class ReservationController {
         this.reservaService = reservaService;
     }
 
+    @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Criar nova reserva", description = "Cria uma nova reserva para uma mesa específica em nome do usuário logado.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Reserva realizada com sucesso.",
@@ -44,6 +46,8 @@ public class ReservationController {
         return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
     }
 
+
+    @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Listar reservas do usuário", description = "Retorna uma lista de todas as reservas do usuário autenticado.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de reservas retornada com sucesso.",
@@ -57,6 +61,8 @@ public class ReservationController {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
+
+    @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Cancelar reserva", description = "Cancela uma reserva existente. Apenas o usuário que a criou pode cancelar.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Reserva cancelada com sucesso.",
