@@ -28,28 +28,6 @@ public class SecurityConfiguration {
             "/users/register",
             "/users/login"
     };
-//
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        return http
-//                .csrf(csrf -> csrf.disable())
-//                .sessionManagement(session ->
-//                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//                )
-//                .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers(HttpMethod.POST, "/mesas").hasRole("ADMIN")
-//                        .requestMatchers(HttpMethod.PUT, "/mesas/**").hasRole("ADMIN")
-//                        .requestMatchers(HttpMethod.DELETE, "/mesas/**").hasRole("ADMIN")
-//                        .requestMatchers("/swagger-ui/**").permitAll()
-//                        .requestMatchers("/v3/api-docs/**").permitAll()
-//                        .requestMatchers("/swagger-ui.html").permitAll()
-//                        .requestMatchers("/", "/css/**", "/js/**", "/images/**", "/users/login", "/users/register").permitAll()
-//                        .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
-//                        .anyRequest().authenticated()
-//                )
-//                .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
-//                .build();
-//    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -69,10 +47,11 @@ public class SecurityConfiguration {
                         .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
                         .anyRequest().authenticated()
                 )
-                // Comente a linha abaixo para desativar o filtro de autenticação
-                // .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
+
+
 
 
     @Bean
